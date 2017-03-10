@@ -1,0 +1,276 @@
+
+
+
+#include "OpenGLExampleBrowser.h"
+#include "LinearMath/btQuickprof.h"
+#include "../OpenGLInclude.h"
+#include "../SimpleOpenGL2App.h"
+#ifndef NO_OPENGL3
+#include "../OpenGLWindow/SimpleOpenGL3App.h"
+#endif
+#include "../CommonInterfaces/CommonRenderInterface.h"
+#ifdef __APPLE__
+#include "../OpenGLWindow/MacOpenGLWindow.h"
+#else
+#ifdef _WIN32
+#include "../Win32OpenGLWindow.h"
+#else
+//let's cross the fingers it is Linux/X11
+#include "../OpenGLWindow/X11OpenGLWindow.h"
+#endif //_WIN32
+#endif//__APPLE__
+//#include "../ThirdPartyLibs/Gwen/Renderers/OpenGL_DebugFont.h"
+
+#include "Bullet3Common/b3Vector3.h"
+#include "assert.h"
+#include <stdio.h>
+
+#include "../Utils/b3Clock.h"
+
+#include "../CommonInterfaces/Common2dCanvasInterface.h"
+#include "../CommonInterfaces/CommonExampleInterface.h"
+#include "Bullet3Common/b3CommandLineArgs.h"
+#include "../SimpleCamera.h"
+#include "../SimpleOpenGL2Renderer.h"
+
+#include "OpenGLGuiHelper.h"
+#include "Bullet3Common/b3FileUtils.h"
+
+#include "LinearMath/btIDebugDraw.h"
+//quick test for file import, @todo(erwincoumans) make it more general and add other file formats
+//#include "../Importers/ImportURDFDemo/ImportURDFSetup.h"
+//#include "../Importers/ImportBullet/SerializeSetup.h"
+
+#include "Bullet3Common/b3HashMap.h"
+
+
+
+
+#include "..\duktape\js_stuff.h"
+
+class CommonExampleInterface*    RaytestCreateFunc(struct CommonExampleOptions& options);
+
+
+void save_state();
+void restore_state();
+
+SimpleOpenGL2Renderer *m_renderer;
+OpenGLGuiHelper *s_guiHelper;
+CommonExampleInterface *sCurrentDemo;
+
+GLvoid ReSizeGLScene(GLsizei width, GLsizei height);
+
+class BulletDemo : public GLWindow {
+public:
+	BulletDemo() : GLWindow(0) {
+		glewInit();
+		EasyGtkWidget *ez = EASYGTKWIDGET( GetWidget());
+		ez->setSize(200,200);
+		m_renderer = new SimpleOpenGL2Renderer(width,height);
+		s_guiHelper= new OpenGLGuiHelper(NULL, /*sUseOpenGL2*/1);
+		CommonExampleOptions options(s_guiHelper, 0);
+		sCurrentDemo = RaytestCreateFunc(options);
+		sCurrentDemo->initPhysics();
+		sCurrentDemo->resetCamera();
+		//OnExpose();
+		SetTimer(1000.f / 60.0);
+	}
+	void OnTimer() {
+		OnExpose();
+	}
+	void OnExpose() {
+		MakeCurrent();
+				save_state();
+FakeGL::glViewport(0,0,width,height);						// Reset The Current Viewport
+
+			
+	FakeGL::glMatrixMode(GL_TEXTURE);
+	FakeGL::glLoadIdentity();
+	FakeGL::glDisable(GL_TEXTURE_GEN_S);
+	FakeGL::glDisable(GL_TEXTURE_GEN_T);
+	FakeGL::glDisable(GL_TEXTURE_GEN_R);
+	FakeGL::glDisable(GL_TEXTURE_GEN_Q);
+	FakeGL::glEnable(GL_TEXTURE_2D);
+	FakeGL::glColor3ub(255,255,255) ;
+	ReSizeGLScene(width, height);
+
+
+
+FakeGL::glEnable(GL_TEXTURE_2D);                        // Enable Texture Mapping ( NEW )
+FakeGL::glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
+FakeGL::glClearColor(0.0f, 0.0f, 0.0f, 0.5f);				// Black Background
+FakeGL::glClearDepth(1.0f);									// Depth Buffer Setup
+FakeGL::glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
+FakeGL::glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
+FakeGL::glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
+
+FakeGL::glLoadIdentity();	
+
+	FakeGL::glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
+	FakeGL::glLoadIdentity();									// Reset The Projection Matrix
+
+	// Calculate The Aspect Ratio Of The Window
+	///gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
+// The following code is a fancy bit of math that is eqivilant to calling:
+// gluPerspective( fieldOfView/2.0f, width/height , 0.1f, 255.0f )
+// We do it this way simply to avoid requiring glu.h
+GLfloat zNear = 0.1f;
+GLfloat zFar = 255.0f;
+GLfloat aspect = float(width)/float(height);
+GLfloat fH = tan( float(45.0f/ 360.0f * 3.14159f) ) * zNear;
+GLfloat fW = fH * aspect;
+FakeGL::glFrustum( -fW, fW, -fH, fH, zNear, zFar );
+
+
+
+
+	FakeGL::glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
+	FakeGL::glLoadIdentity();									// Reset The Modelview Matrix
+
+
+		Sys_Printf("width = %d height = %d\n", width, height );
+		FakeGL::glViewport( 0, 0, width, height );
+		FakeGL::glClearColor(1.0, 0.0, 1.0, 0 );
+
+
+		
+		m_renderer->m_width = width;
+		m_renderer->m_height = height;
+
+	//FakeGL::glViewport(0,0,s_app->m_window->getWidth(), s_app->m_window->getHeight());
+
+
+	
+		//assert(FakeGL::glGetError()==GL_NO_ERROR);
+		m_renderer->init();
+        DrawGridData dg;
+        //dg.upAxis = s_app->getUpAxis();
+
+        {
+            BT_PROFILE("Update Camera and Light");
+
+	
+
+            //m_renderer->updateCamera(dg.upAxis);
+			m_renderer->updateCamera(1);
+        }
+
+		
+		static int frameCount = 0;
+		frameCount++;
+
+		if (1)
+		{
+            BT_PROFILE("Draw frame counter");
+            char bla[1024];
+            sprintf(bla,"Frame %d", frameCount);
+           // s_app->drawText(bla,10,10);
+		}
+
+   // if (gPngFileName)
+   // {
+   //     
+   //     static int skip = 0;
+   //     skip--;
+   //     if (skip<0)
+   //     {
+   //         skip=gPngSkipFrames;
+   //         //printf("gPngFileName=%s\n",gPngFileName);
+   //         static int s_frameCount = 100;
+   //         
+   //         sprintf(staticPngFileName,"%s%d.png",gPngFileName,s_frameCount++);
+   //         //b3Printf("Made screenshot %s",staticPngFileName);
+   //         s_app->dumpNextFrameToPng(staticPngFileName);
+   //         FakeGL::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   //     }
+   // }
+
+		
+		if (sCurrentDemo)
+		{
+			//if (!pauseSimulation || singleStepSimulation)
+			{
+				//singleStepSimulation = false;
+				//printf("---------------------------------------------------\n");
+				//printf("Framecount = %d\n",frameCount);
+				
+				//if (gFixedTimeStep>0)
+				//{
+				//	sCurrentDemo->stepSimulation(gFixedTimeStep);
+				//} else
+				{
+					//sCurrentDemo->stepSimulation(deltaTime);//1./60.f);
+					sCurrentDemo->stepSimulation(1.0f/60.f);//);
+				}
+			}
+			
+			//if (renderGrid)
+            //{
+            //    BT_PROFILE("Draw Grid");
+            //    FakeGL::glPolygonOffset(3.0, 3);
+            //    FakeGL::glEnable(GL_POLYGON_OFFSET_FILL);
+            //    s_app->drawGrid(dg);
+            //    
+            //}
+			//if (renderVisualGeometry && ((gDebugDrawFlags&btIDebugDraw::DBG_DrawWireframe)==0))
+            //{
+			//	if (visualWireframe)
+			//	{
+			//		FakeGL::glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+			//	}
+            //    BT_PROFILE("Render Scene");
+                sCurrentDemo->renderScene();
+           // }
+            {
+				
+				//FakeGL::glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+                //sCurrentDemo->physicsDebugDraw(gDebugDrawFlags);
+            }
+		}
+
+	//if (gui2 && s_guiHelper && s_guiHelper->getRenderInterface() && s_guiHelper->getRenderInterface()->getActiveCamera())
+	//{
+	//	char msg[1024];
+	//	float camDist = s_guiHelper->getRenderInterface()->getActiveCamera()->getCameraDistance();
+	//	float pitch = s_guiHelper->getRenderInterface()->getActiveCamera()->getCameraPitch();
+	//	float yaw = s_guiHelper->getRenderInterface()->getActiveCamera()->getCameraYaw();
+	//	float camTarget[3];
+	//	s_guiHelper->getRenderInterface()->getActiveCamera()->getCameraTargetPosition(camTarget);
+	//	sprintf(msg,"dist=%f, pitch=%f, yaw=%f,target=%f,%f,%f", camDist,pitch,yaw,camTarget[0],camTarget[1],camTarget[2]);
+	//	gui2->setStatusBarMessage(msg, true);	
+	//}
+	
+
+
+	//saveOpenGLState(s_instancingRenderer->getScreenWidth(), s_instancingRenderer->getScreenHeight());
+	//// ... render gui
+	//restoreOpenGLState();
+
+
+		                  //render_imgui();
+
+
+
+
+
+
+
+
+
+		FakeGL::glFinish();
+		restore_state();
+		SwapBuffers();
+	}
+};
+
+
+
+
+void  add_bullet_demo_widget() {	
+
+	BulletDemo *bd = new BulletDemo();
+	int widget = (int)bd->GetWidget();
+	bd->RedrawWindow();
+	js_call("split_rootpane", "si", "ha", widget);
+
+}
