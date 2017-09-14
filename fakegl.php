@@ -8,6 +8,10 @@
 	
 	$funcs = parse_functions_in_headerfile( file_get_contents("fakegl.txt") );
 	
+	echo "<script>";
+	echo "funcs = " . json_encode($funcs) . ";\n";
+	
+	echo "</script>";
 	foreach ($funcs as $func) {
 		$pointer = "";
 		for ($i=0; $i<$func->is_pointer; $i++)

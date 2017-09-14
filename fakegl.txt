@@ -334,3 +334,101 @@ void glVertex4s (GLshort x, GLshort y, GLshort z, GLshort w);
 void glVertex4sv (const GLshort *v);
 void glVertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
 void glViewport (GLint x, GLint y, GLsizei width, GLsizei height);
+
+void glDrawRangeElements(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const GLvoid *indices);
+
+void glCompressedTexImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const void *data);
+void glCompressedTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const void *data);
+
+void glMultiDrawElements(GLenum mode, const GLsizei *count, GLenum type, const GLvoid* *indices, GLsizei primcount);
+
+void glGenQueries(GLsizei n, GLuint *ids);
+void glDeleteQueries(GLsizei n, const GLuint *ids);
+void glBeginQuery(GLenum target, GLuint id);
+void glEndQuery(GLenum target);
+void glGetQueryObjectiv(GLuint id, GLenum pname, GLint *params);
+void glGetQueryObjectuiv(GLuint id, GLenum pname, GLuint *params);
+
+void glBindBuffer(GLenum target, GLuint buffer);
+void glDeleteBuffers(GLsizei n, const GLuint *buffers);
+void glGenBuffers(GLsizei n, GLuint *buffers);
+void glBufferData(GLenum target, GLsizeiptr size, const void *data, GLenum usage);
+void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const void *data);
+
+void glAttachShader(GLuint program, GLuint shader);
+void glBindAttribLocation(GLuint program, GLuint index, const GLchar *name);
+void glCompileShader(GLuint shader);
+GLuint glCreateProgram(void);
+GLuint glCreateShader(GLenum type);
+void glDeleteProgram(GLuint program);
+void glDeleteShader(GLuint shader);
+void glDetachShader(GLuint program, GLuint shader);
+void glDisableVertexAttribArray(GLuint index);
+void glEnableVertexAttribArray(GLuint index);
+void glGetActiveUniform(GLuint program, GLuint index, GLsizei bufSize, GLsizei *length, GLint *size, GLenum *type, GLchar *name);
+void glGetProgramiv(GLuint program, GLenum pname, GLint *params);
+void glGetProgramInfoLog(GLuint program, GLsizei bufSize, GLsizei *length, GLchar *infoLog);
+void glGetShaderiv(GLuint shader, GLenum pname, GLint *params);
+void glGetShaderInfoLog(GLuint shader, GLsizei bufSize, GLsizei *length, GLchar *infoLog);
+void glGetShaderSource(GLuint shader, GLsizei bufSize, GLsizei *length, GLchar *source);
+GLint glGetUniformLocation(GLuint program, const GLchar *name);
+void glLinkProgram(GLuint program);
+void glShaderSource(GLuint shader, GLsizei count, const GLchar* *string, const GLint *length);
+void glUseProgram(GLuint program);
+void glUniform1f(GLint location, GLfloat v0);
+void glUniform2f(GLint location, GLfloat v0, GLfloat v1);
+void glUniform3f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
+void glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
+void glUniform1i(GLint location, GLint v0);
+void glUniform1fv(GLint location, GLsizei count, const GLfloat *value);
+void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
+void glValidateProgram(GLuint program);
+void glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void *pointer);
+
+void glBindRenderbufferEXT(GLenum target, GLuint renderbuffer);
+void glDeleteRenderbuffersEXT(GLsizei n, const GLuint *renderbuffers);
+void glGenRenderbuffersEXT(GLsizei n, GLuint *renderbuffers);
+void glRenderbufferStorageEXT(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+void glBindFramebufferEXT(GLenum target, GLuint framebuffer);
+void glDeleteFramebuffersEXT(GLsizei n, const GLuint *framebuffers);
+void glGenFramebuffersEXT(GLsizei n, GLuint *framebuffers);
+GLenum glCheckFramebufferStatusEXT(GLenum target);
+void glFramebufferTexture2DEXT(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+void glFramebufferRenderbufferEXT(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+void glGenerateMipmapEXT(GLenum target);
+
+void glBlitFramebufferEXT(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
+
+void glRenderbufferStorageMultisampleEXT(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
+
+void glBindVertexArray(GLuint array);
+void glDeleteVertexArrays(GLsizei n, const GLuint *arrays);
+void glGenVertexArrays(GLsizei n, GLuint *arrays);
+
+GLvoid glBindMultiTextureEXT(GLenum texunit, GLenum target, GLuint texture);
+GLvoid glTextureParameterfEXT(GLuint texture, GLenum target, GLenum pname, GLfloat param);
+GLvoid glTextureParameteriEXT(GLuint texture, GLenum target, GLenum pname, GLint param);
+GLvoid glTextureImage2DEXT(GLuint texture, GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels);
+GLvoid glTextureSubImage2DEXT(GLuint texture, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels);
+GLvoid glCopyTextureSubImage2DEXT(GLuint texture, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height);
+GLvoid glCompressedTextureImage2DEXT(GLuint texture, GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const GLvoid *data);
+GLvoid glCompressedTextureSubImage2DEXT(GLuint texture, GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const GLvoid *data);
+GLvoid glGenerateTextureMipmapEXT(GLuint texture, GLenum target);
+GLvoid glProgramUniform1iEXT(GLuint program, GLint location, GLint v0);
+GLvoid glProgramUniform1fEXT(GLuint program, GLint location, GLfloat v0);
+GLvoid glProgramUniform2fEXT(GLuint program, GLint location, GLfloat v0, GLfloat v1);
+GLvoid glProgramUniform3fEXT(GLuint program, GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
+GLvoid glProgramUniform4fEXT(GLuint program, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
+GLvoid glProgramUniform1fvEXT(GLuint program, GLint location, GLsizei count, const GLfloat *value);
+GLvoid glProgramUniformMatrix4fvEXT(GLuint program, GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
+GLvoid glNamedRenderbufferStorageEXT(GLuint renderbuffer, GLenum internalformat, GLsizei width, GLsizei height);
+GLvoid glNamedRenderbufferStorageMultisampleEXT(GLuint renderbuffer, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
+GLenum glCheckNamedFramebufferStatusEXT(GLuint framebuffer, GLenum target);
+GLvoid glNamedFramebufferTexture2DEXT(GLuint framebuffer, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+GLvoid glNamedFramebufferRenderbufferEXT(GLuint framebuffer, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+
+void glActiveTextureARB(GLenum texture);
+void glClientActiveTextureARB(GLenum texture);
+void glMultiTexCoord2fARB(GLenum target, GLfloat s, GLfloat t);
+void glLockArraysEXT(GLint first, GLsizei count);
+void glUnlockArraysEXT(void);
