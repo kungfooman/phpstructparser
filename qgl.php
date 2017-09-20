@@ -230,28 +230,39 @@
 			echo "\tfuncptr($args);\n";
 		
 		
-		printf("\tglfunc_t *glfunc = glfuncs + $funcid;\n");
-		printf("\tglfunc->calls++;\n");
-
+		$countcalls = false;
+		
+		if ($countcalls) {
+			printf("\tglfunc_t *glfunc = glfuncs + $funcid;\n");
+			printf("\tglfunc->calls++;\n");
+		}
+		
+		$showerrors = false;
+		
+		if ($showerrors)
 		if ($func->name != "glGetError") {
 			printf("\tconst GLenum err = qglGetError();\n");
 			printf("\tif (err != 0) { printf(\"$func->name: error=%%d\\n\", err); glfunc->showprintf = 1; }\n");
 			
 		}
 		
-		if (count($arglist))
-			if ($func->type != "void" && $func->type != "GLvoid") {
-				echo("\tif (glfunc->showprintf) printf(\"$func->name( $formats_str ); // ret=" . printfformat($func) . "\\n\", $args, ret);\n");
-				echo "\treturn ret;\n";
-			} else
-				echo("\tif (glfunc->showprintf) printf(\"$func->name( $formats_str );\\n\", $args);\n");
-		else
-			if ($func->type != "void" && $func->type != "GLvoid") {
-				echo("\tif (glfunc->showprintf) printf(\"$func->name(); // ret=" . printfformat($func) . "\\n\", ret);\n");
-				echo "\treturn ret;\n";
-			} else
-				echo("\tif (glfunc->showprintf) printf(\"$func->name();\\n\");\n");	
+		$spam = false;
 		
+		if (count($arglist)) {
+			if ($func->type != "void" && $func->type != "GLvoid") {
+				if ($spam) echo("\tif (glfunc->showprintf) printf(\"$func->name( $formats_str ); // ret=" . printfformat($func) . "\\n\", $args, ret);\n");
+				echo "\treturn ret;\n";
+			} else {
+				if ($spam) echo("\tif (glfunc->showprintf) printf(\"$func->name( $formats_str );\\n\", $args);\n");
+			}
+		} else {
+			if ($func->type != "void" && $func->type != "GLvoid") {
+				if ($spam) echo("\tif (glfunc->showprintf) printf(\"$func->name(); // ret=" . printfformat($func) . "\\n\", ret);\n");
+				echo "\treturn ret;\n";
+			} else {
+				if ($spam) echo("\tif (glfunc->showprintf) printf(\"$func->name();\\n\");\n");	
+			}
+		}
 		
 		
 		//var_dump($arglist);
